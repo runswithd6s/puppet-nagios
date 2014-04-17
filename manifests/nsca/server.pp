@@ -11,6 +11,7 @@
 #
 class nagios::nsca::server(
   $decryption_method = pick($nagios_nsca_decryption_method, '0'),
+  $nsca_package = 'nsca'
 ) {
 
   include ::nagios::params
@@ -20,6 +21,7 @@ class nagios::nsca::server(
 
   if !defined (Package['nsca']) {
     package {'nsca':
+      name => $nsca_package,
       ensure => installed;
     }
   }
