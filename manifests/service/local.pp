@@ -14,8 +14,8 @@
 define nagios::service::local (
   $command_line,
   $codename,
+  $service_description,
   $ensure=present,
-  $service_description=undef,
   $host_name=false,
   $check_command=false,
   $contact_groups=undef,
