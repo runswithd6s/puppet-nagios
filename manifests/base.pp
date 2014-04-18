@@ -128,6 +128,15 @@ class nagios::base {
     notify  => Exec['nagios-restart'],
   }
 
+  file {"${nagios::params::resourcedir}/generic-service.cfg":
+    ensure  => present,
+    owner   => root,
+    group   => root,
+    mode    => '0644',
+    source  => 'puppet:///modules/nagios/generic-service.cfg',
+    notify  => Exec['nagios-restart'],
+  }
+
   file {"${nagios::params::resourcedir}/generic-timeperiod.cfg":
     ensure  => present,
     owner   => root,
