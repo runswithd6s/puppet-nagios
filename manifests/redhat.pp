@@ -9,7 +9,13 @@ class nagios::redhat inherits nagios::base {
 
   include nagios::params
 
-  # Common resources between base, redhat, and debian
+  # Used for notification templates
+  $nagios_mail_path = '/bin/mail'
+
+  $user1 = $::architecture ? {
+      'x86_64' => '/usr/lib64/nagios/plugins',
+      default  => '/usr/lib/nagios/plugins',
+  }
 
   package { 'nagios':
     ensure => present,

@@ -5,7 +5,9 @@
 #
 #   include nagios
 #
-class nagios::base {
+class nagios::base (
+  $basename = 'nagios',
+) {
 
   include nagios::params
 
@@ -14,12 +16,6 @@ class nagios::base {
   $nagios_p1_file = $nagios::params::p1file
   $nagios_debug_level = '0'
   $nagios_debug_verbosity = '0'
-
-  case $::osfamily {
-    'Debian': { $nagios_mail_path = '/usr/bin/mail' }
-    'RedHat': { $nagios_mail_path = '/bin/mail' }
-    default: { fail ("OS family ${::osfamily} not yet implemented !") }
-  }
 
   # Common resources between base, redhat, and debian
 

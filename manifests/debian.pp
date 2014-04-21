@@ -7,10 +7,10 @@
 #
 class nagios::debian inherits nagios::base {
 
-  include nagios::params
-
-  # Common resources between base, redhat, and debian
-
+  $user1 = '/usr/lib/nagios/plugins'
+  $p1file = '/usr/lib/nagios3/p1.pl'
+  $nagios_mail_path = '/usr/bin/mail'
+ 
   package {[
     'nagios3-common',
     'nagios-plugins',
