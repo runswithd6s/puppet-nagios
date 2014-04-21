@@ -32,7 +32,7 @@ define nagios::host (
     hostgroups     => $hostgroups,
     contact_groups => $contact_groups,
     target         => "${nagios::params::resourcedir}/host-${fname}.cfg",
-    notify         => Exec['nagios-restart'],
+    notify         => Service['nagios'],
   }
 
   file { "${nagios::params::resourcedir}/host-${fname}.cfg":

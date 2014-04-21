@@ -59,7 +59,7 @@ define nagios::service::nsca (
     host_name             => $nagios_host_name,
     tag                   => $export_for,
     target                => "${nagios::params::resourcedir}/collected-service-${fname}_on_${::hostname}.cfg",
-    notify                => Exec['nagios-restart'],
+    notify                => Service['nagios'],
     contact_groups        => $contact_groups,
     servicegroups         => $service_groups,
     normal_check_interval => $normal_check_interval,

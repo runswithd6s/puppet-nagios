@@ -21,7 +21,7 @@ define nagios::command (
     ensure        => $ensure,
     command_line  => $command_line,
     target        => "${nagios::params::resourcedir}/command-${fname}.cfg",
-    notify        => Exec['nagios-restart'],
+    notify        => Service['nagios'],
   }
 
   file { "${nagios::params::resourcedir}/command-${fname}.cfg":

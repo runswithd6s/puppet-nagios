@@ -34,7 +34,7 @@ define nagios::host::remote (
     address => $host_address,
     alias   => $nagios_alias,
     target  => "${nagios::params::resourcedir}/host-${fname}.cfg",
-    notify  => Exec['nagios-restart'],
+    notify  => Service['nagios'],
   }
 
   file { "${nagios::params::resourcedir}/host-${fname}.cfg":
@@ -55,7 +55,7 @@ define nagios::host::remote (
     hostgroups     => $hostgroups,
     contact_groups => $contact_groups,
     target         => "${nagios::params::resourcedir}/collected-host-${fname}.cfg",
-    notify         => Exec['nagios-restart'],
+    notify         => Service['nagios'],
   }
 
   @@file { "${nagios::params::resourcedir}/collected-host-${fname}.cfg":

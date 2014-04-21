@@ -53,7 +53,7 @@ define nagios::service::local (
     max_check_attempts    => $max_check_attempts,
     target                => "${nagios::params::resourcedir}/service-${fname}.cfg",
     require               => Nagios::Command[$codename],
-    notify                => Exec['nagios-restart'],
+    notify                => Service['nagios'],
   }
 
   file { "${nagios::params::resourcedir}/service-${fname}.cfg":

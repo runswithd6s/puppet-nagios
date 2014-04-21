@@ -18,7 +18,7 @@ class nagios::server::redhat inherits nagios::server {
       'x86_64' => '/usr/lib64/nagios/plugins',
       default  => '/usr/lib/nagios/plugins',
   }
-  nagios::resource { 'USER1': value => $nagios::params::user1 }
+  #nagios::resource { 'USER1': value => $user1, }
 
   package { 'nagios':
     ensure => present,
@@ -29,12 +29,6 @@ class nagios::server::redhat inherits nagios::server {
     ensure => link,
     target => '/etc/nagios'
   }
-
-
-  # Service['nagios'] {
-  #   hasstatus   => false,
-  #   pattern     => '/usr/sbin/nagios -d /etc/nagios/nagios.cfg',
-  # }
 
   case $::lsbmajdistrelease {
 
@@ -81,14 +75,4 @@ class nagios::server::redhat inherits nagios::server {
     }
 
   }
-
-  # # workaround broken init-script
-  # Exec['nagios-restart'] {
-  #   command => "nagios -v ${nagios::params::conffile} && pkill -P 1 -f '^/usr/sbin/nagios' && /etc/init.d/nagios start",
-  # }
-
-  # Exec['nagios-reload'] {
-  #   command => "nagios -v ${nagios::params::conffile} && pkill -P 1 -HUP -f '^/usr/sbin/nagios'",
-  # }
-
 }

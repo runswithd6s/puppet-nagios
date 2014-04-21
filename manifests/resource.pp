@@ -13,10 +13,9 @@
 #
 define nagios::resource(
   $value,
+  $resource_config_path="${nagios::params::rootdir}/resource.cfg",
   $ensure = present,
 ) {
-
-  include nagios::params
 
   concat::fragment {$name:
     ensure  => $ensure,

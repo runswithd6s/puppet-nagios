@@ -48,7 +48,7 @@ define nagios::service::remote (
     max_check_attempts    => $max_check_attempts,
     target                => "${nagios::params::resourcedir}/collected-service-${fname}_on_${::hostname}.cfg",
     require               => Nagios_command["${name}_on_${::hostname}"],
-    notify                => Exec['nagios-restart'],
+    notify                => Service['nagios'],
   }
 
   @@file { "${nagios::params::resourcedir}/collected-service-${fname}_on_${::hostname}.cfg":
@@ -63,7 +63,7 @@ define nagios::service::remote (
     command_line => $command_line,
     target       => "${nagios::params::resourcedir}/collected-command-${fname}_on_${::hostname}.cfg",
     tag          => $export_for,
-    notify       => Exec['nagios-restart'],
+    notify => Service['nagios'],
   }
 
   @@file { "${nagios::params::resourcedir}/collected-command-${fname}_on_${::hostname}.cfg":

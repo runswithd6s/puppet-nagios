@@ -1,7 +1,8 @@
 # Build a server with options from the nagios.cfg config file as
 # parameters
 class nagios::server (
-  $nagios_config_file='/etc/nagios3/nagios.cfg',
+  $service_name='nagios',
+  $nagios_config_file='/etc/nagios/nagios.cfg',
   # Nagios config file options
   $accept_passive_host_checks=1,
   $accept_passive_service_checks=1,
@@ -149,45 +150,64 @@ class nagios::server (
     ensure     => running,
     enable     => true,
     hasrestart => true,
-    require    => Package['nagios'],
-    subscribe => File[$nagios_config$file],
+    alias      => 'nagios-restart',
+    require    => [ Package['nagios'], Exec['nagios-configtest'], ],
+    subscribe => File[$nagios_config_file],
   }
 
   # Run LSB 'service' to start/stop/reload
+  # Called from service, command, contact, etc...
   exec { 'nagios-configtest':
     command     => "service ${service_name} configtest",
     refreshonly => true,
   }
 
-  exec { 'nagios-restart':
-    command     => "service ${service_name} restart",
+  exec { 'nagios-reload':
+    command     => "service ${service_name} reload",
     refreshonly => true,
-    require => 'nagios-configtest'
+    require => Exec['nagios-configtest']
   }
 
-  exec { 'nagios-restart':
-    command     => "service ${service_name} restart",
-    refreshonly => true,
-    require => 'nagios-configtest'
+  # Main configuration file
+  file {$nagios_config_file:
+    owner => $nagios_user,
+    group => $nagios_group,
+    mode => '0644',
+    content => template('nagios/nagios.cfg.erb'),
+    notify => Exec['nagios-configtest'],
   }
 
+  # Set up config directories -- requires defined types
+  if $cfg_dir != undef {
+    nagios::server::cfg_dir { $cfg_dir:
+       nagios_user => $nagios_user,
+       nagios_group => $nagios_group,
+       nagios_config_file => $nagios_config_file,
+     }
+  }
+
+  # Set up config directories -- requires defined types
+  if $cfg_file != undef {
+    nagios::server::cfg_file{ $cfg_file:
+      nagios_user => $nagios_user,
+      nagios_group => $nagios_group,
+      nagios_config_file => $nagios_config_file,
+    }
+  }
+
+  # Create files and directories
+  file { 'nagios read-write dir':
+    ensure  => directory,
+    path    => regsubst($command_file, '/([^/]*)$', ''),
+    owner   => $nagios_user,
+    group   => $nagios_group,
+    mode    => '2710',
+    require => Package['nagios'],
+  }
   exec {'create fifo':
     command => "mknod -m 0664 ${command_file} p && chown ${nagios_user}:${nagios_group} ${command_file}",
     unless  => "test -p ${command_file}",
     require => File['nagios read-write dir'],
   }
 
-  # TODO: cfg_file and cfg_dir handling via Auges, due to multiple entries being needed
-
-  # Get the dirname of a path 
-  # $dirname = regsubst($filepath, '/([^/]*)$', '')
-
-  file { 'nagios read-write dir':
-    ensure  => directory,
-    path    => regsubst($command_file, '/([^/]*)$', '')
-    owner   => $nagios_user,
-    group   => $nagios_group,
-    mode    => '2710',
-    require => Package['nagios'],
-  }
 }

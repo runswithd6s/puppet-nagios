@@ -33,7 +33,7 @@ define nagios::host::nsca (
     address => $nagios_host_address,
     alias   => $nagios_alias,
     target  => "${nagios::params::resourcedir}/host-${fname}.cfg",
-    notify  => Exec['nagios-restart'],
+    notify  => Service['nagios'],
   }
 
   file { "${nagios::params::resourcedir}/host-${fname}.cfg":
@@ -53,7 +53,7 @@ define nagios::host::nsca (
     hostgroups     => $hostgroups,
     target         => "${nagios::params::resourcedir}/collected-host-${fname}.cfg",
     contact_groups => $contact_groups,
-    notify         => Exec['nagios-restart'],
+    notify         => Service['nagios'],
   }
 
   @@file { "${nagios::params::resourcedir}/collected-host-${fname}.cfg":

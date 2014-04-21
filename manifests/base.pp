@@ -73,7 +73,7 @@ class nagios::base (
       $nagios::params::conffile,
       "${nagios::params::rootdir}/resource.cfg",
     ]:
-    notify  => Exec['nagios-restart'],
+    notify => Service['nagios'],
     require => Package['nagios'],
   }
 
