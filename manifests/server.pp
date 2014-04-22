@@ -238,4 +238,6 @@ class nagios::server (
       } #end 5,6
     } # end lsbmajdistrelease
   } # end selinux
+
+  include nagios::server::base_config
 }
