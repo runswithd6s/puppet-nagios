@@ -18,11 +18,17 @@ log_file=<%= @log_file || '/var/log/nagios.log' %>
 # You can split your object definitions across several config files
 # if you wish (as shown below), or keep them all in a single config file.
 #cfg_file=/etc/nagios/objects/services.cfg
+<% ! @cfg_file.nil? && @cfg_file.each do |c| -%>
+cfg_file=<%= c %>
+<% end -%>
 
 # You can also tell Nagios to process all config files (with a .cfg
 # extension) in a particular directory by using the cfg_dir
 # directive as shown below:
 #cfg_dir=/etc/nagios.d
+<% ! @cfg_dir.nil? && @cfg_dir.each do |c| -%>
+cfg_dir=<%= c %>
+<% end -%>
 
 # OBJECT CACHE FILE
 # This option determines where object definitions are cached when

@@ -177,24 +177,6 @@ class nagios::server (
     notify => Exec['nagios-configtest'],
   }
   
-  # Set up config directories -- requires defined types
-  if $cfg_dir != undef {
-    nagios::server::cfg_dir { $cfg_dir:
-      nagios_user => $nagios_user,
-      nagios_group => $nagios_group,
-      nagios_config_file => $nagios_config_file,
-    }
-  }
-  
-  # Set up config directories -- requires defined types
-  if $cfg_file != undef {
-    nagios::server::cfg_file{ $cfg_file:
-      nagios_user => $nagios_user,
-      nagios_group => $nagios_group,
-      nagios_config_file => $nagios_config_file,
-    }
-  }
-  
   # Create files and directories
   file { 'nagios read-write dir':
     ensure  => directory,
@@ -225,7 +207,6 @@ class nagios::server (
   File[$state_retention_file] { mode => '0600', }
   File[$status_file]  { mode => '0664', }
 
-  
   if ($::selinux) {
     case $::lsbmajdistrelease {
       '5','6': {
@@ -237,24 +218,24 @@ class nagios::server (
           onlyif  => $::selinux,
         }
         
-        File[
-             '/var/nagios',
+        File [
+              '/var/nagios',
              '/var/run/nagios',
-             '/var/log/nagios',
-             '/var/lib/nagios',
-             '/var/lib/nagios/spool',
-             '/var/cache/nagios',
-             $check_result_path,
-             $state_retention_file,
-             $temp_file, 
-             $status_file, 
-             $precached_object_file, 
-             $object_cache_file,
-             'nagios read-write dir',]
+              '/var/log/nagios',
+              '/var/lib/nagios',
+              '/var/lib/nagios/spool',
+              '/var/cache/nagios',
+              $check_result_path,
+              $object_cache_file,
+              $precached_object_file, 
+              $state_retention_file,
+              $status_file, 
+              $temp_file, 
+              'nagios read-write dir' ] 
         {
           seltype => 'nagios_log_t',
         }
-      }
-    }
-  }
+      } #end 5,6
+    } # end lsbmajdistrelease
+  } # end selinux
 }

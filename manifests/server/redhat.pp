@@ -25,7 +25,7 @@ class nagios::server::redhat {
   }
 
   class {'nagios::server' :
-    nagios_config_file => '/etc/nagios3/nagios.cfg',
+    cfg_dir => ['/etc/nagios.d', '/etc/nagios/objects'],
   }
 
 }
