@@ -16,13 +16,8 @@ define nagios::server::cfg_file (
 
   # Append cfg_file=$config_file path to nagios.cfg file
   augeas { "cfg_file=$config_file in $nagios_config_file":
-    incl => "$nagios_config_file",
-    lens => 'nagioscfg.aug',
-    changes => [
-                "ins cfg_file after cfg_file",
-                "set cfg_file/[last()] ${config_file}"
-                ],
-    onlyif => "match cfg_file != [$config_file]",
+    context => "/files$nagios_config_file",
+    changes => "set cfg_file[last()+1] ${config_file}",
     require => File[$nagios_config_file, $config_file],
     notify => Service['nagios'],
   }
