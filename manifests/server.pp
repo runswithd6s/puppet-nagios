@@ -176,16 +176,16 @@ class nagios::server (
     content => template('nagios/nagios.cfg.erb'),
     notify => Exec['nagios-configtest'],
   }
-
+  
   # Set up config directories -- requires defined types
   if $cfg_dir != undef {
     nagios::server::cfg_dir { $cfg_dir:
-       nagios_user => $nagios_user,
-       nagios_group => $nagios_group,
-       nagios_config_file => $nagios_config_file,
-     }
+      nagios_user => $nagios_user,
+      nagios_group => $nagios_group,
+      nagios_config_file => $nagios_config_file,
+    }
   }
-
+  
   # Set up config directories -- requires defined types
   if $cfg_file != undef {
     nagios::server::cfg_file{ $cfg_file:
@@ -194,7 +194,7 @@ class nagios::server (
       nagios_config_file => $nagios_config_file,
     }
   }
-
+  
   # Create files and directories
   file { 'nagios read-write dir':
     ensure  => directory,
@@ -209,5 +209,52 @@ class nagios::server (
     unless  => "test -p ${command_file}",
     require => File['nagios read-write dir'],
   }
+  
+  file {[
+         $state_retention_file,
+         $temp_file,
+         $status_file,
+         $precached_object_file,
+         $object_cache_file,
+         ]:
+           ensure   => present,
+           owner    => $nagios_user,
+           group    => $nagios_group,
+           loglevel => 'debug',
+  }
+  File[$state_retention_file] { mode => '0600', }
+  File[$status_file]  { mode => '0664', }
 
+  
+  if ($::selinux) {
+    case $::lsbmajdistrelease {
+      '5','6': {
+        
+        exec { "chcon $command_file":
+          require => [Exec['create fifo'], File['nagios read-write dir']],
+          command => "chcon -t nagios_spool_t ${command_file}",
+          unless  => "ls -Z ${command_file} | grep -q nagios_spool_t",
+          onlyif  => $::selinux,
+        }
+        
+        File[
+             '/var/nagios',
+             '/var/run/nagios',
+             '/var/log/nagios',
+             '/var/lib/nagios',
+             '/var/lib/nagios/spool',
+             '/var/cache/nagios',
+             $check_result_path,
+             $state_retention_file,
+             $temp_file, 
+             $status_file, 
+             $precached_object_file, 
+             $object_cache_file,
+             'nagios read-write dir',]
+        {
+          seltype => 'nagios_log_t',
+        }
+      }
+    }
+  }
 }
